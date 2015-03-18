@@ -13,9 +13,9 @@ def generate_output(mode):
             generate_rst(json_data, True)
 
 
-def generate_header(json_file, branch_name):
+def generate_header(json_file, branch):
     json_file.write('{"gerrit_url": "URL",\n'
-                    '"gerrit_branch": "' + str(branch_name) + '",\n'
+                    '"gerrit_branch": "' + str(branch) + '",\n'
                     '"upstream_url": "URL",\n'
                     '"upstream_branch": "branch",\n')
     json_file.write('\n\t"projects": [\n\t')

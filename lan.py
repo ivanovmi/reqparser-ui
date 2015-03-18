@@ -35,9 +35,6 @@ def get_requirements_from_url(url, gerritAccount):
 
 
 def login_to_launchpad(launchpad_id, launchpad_pw):
-    #print 'Please, login to gerrit.'
-    #launchpad_id = raw_input('Login: ')
-    #launchpad_pw = getpass.getpass()
     s = requests.Session()
     r = s.get('https://login.launchpad.net')
 
