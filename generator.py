@@ -3,6 +3,7 @@ import lan
 import require_utils
 import json
 
+
 def request_spec(gerrit_account, repo, branch):
     # List of URLs for spec file
     req_url_spec = ['https://review.fuel-infra.org/gitweb?p=openstack-build/{0}-build.git;'
@@ -32,6 +33,7 @@ def request_spec(gerrit_account, repo, branch):
 
     return req_spec
 
+
 def request_control(gerrit_account, repo, branch, type):
     # URL for getting changelog file
     req_url_changelog = 'https://review.fuel-infra.org/gitweb?p=openstack-build/{0}-build.git;' \
@@ -44,6 +46,7 @@ def request_control(gerrit_account, repo, branch, type):
         req_control = None
 
     return req_control
+
 
 def del_symbol(json_file, n):
     json_file.seek(n, os.SEEK_END)
@@ -77,7 +80,7 @@ def get_req(gerritAccount, req_file, rq2, json_file, branch, type):
             with open("{0}-base.json".format(type), 'r') as b:
                 base = json.load(b)
 
-            if not packs_request is None:
+            if packs_request is not None:
 
                 if type == "control":
                     packs_list = require_utils.Require.get_packs_control(packs_request)
@@ -149,7 +152,7 @@ def get_epoch(gerrit_account, req_file, branch, json_file):
 
             if deb_epoch:
                 print "DEB\n" + deb_epoch + "\n"
-                json_file.write('\t' * 4 + '"DEB": "Epoch:" ' + json.dumps(deb_epoch) + ',\n')
+                json_file.write('\t' * 4 + '"DEB":' + json.dumps(deb_epoch) + ',\n')
 
             del_symbol(json_file, -2)
             json_file.write('\t' * 3 + '},\n')

@@ -3,6 +3,7 @@ import lan
 import body
 import time
 import threading
+from tkFileDialog import askopenfilename
 import tkMessageBox
 import requests
 import ttk
@@ -31,9 +32,24 @@ class App(Tk):
             self.email_exist = 1
 
     def delete_email_entry(self):
-        self.email_label.pack_forget()
-        self.email_entry.pack_forget()
-        self.email_exist = 0
+        if self.email_exist == 0:
+            pass
+        else:
+            self.email_label.pack_forget()
+            self.email_entry.pack_forget()
+            self.email_exist = 0
+
+    def generate_report(self):
+        self.branch_name = self.branch_strvar.get()
+        self.mode = self.mode_strvar.get()
+        self.spec = self.strvar.get()
+        self.global_branch = self.global_branch_strvar.get()
+        self.send = self.boolvar.get()
+        if self.send:
+            self.mail = self.email_entry.get()
+            body.main(self.gerrit, self.mode, self.spec, self.branch_name, self.global_branch, self.send, self.mail)
+        else:
+            body.main(self.gerrit, self.mode, self.spec, self.branch_name, self.global_branch)
 
     @staticmethod
     def center(win):
@@ -91,36 +107,52 @@ class App(Tk):
         else:
             self.main_window()
 
+    def callback(self):
+        self.name = askopenfilename()
+        print self.name
+        self.file_label = Entry(self, text=self.name)
+        self.file_label.pack()
+
     def main_window(self):
         # In this function will create_email_entry main window with all settings for parser
-        # body.main(self.gerrit)
         for widget in app.winfo_children():
             widget.destroy()
 
-        var = IntVar()
-        boolvar = BooleanVar()
+        self.generate_button = Button(self, text='Generate report', command=self.generate_report)
 
-        self.generate_button = Button(self, text='Generate report', command='')
+        self.var = IntVar()
         self.select_format_label = Label(self, text='Please, select format of output:')
-        self.pdf_format_radiobutton = Radiobutton(self, text='pdf', variable=var, value=1)
-        self.html_format_radiobutton = Radiobutton(self, text='html', variable=var, value=2)
+        self.pdf_format_radiobutton = Radiobutton(self, text='pdf', variable=self.var, value=1)
+        self.html_format_radiobutton = Radiobutton(self, text='html', variable=self.var, value=2)
 
+        self.boolvar = BooleanVar()
         self.email_quiestion = Label(self, text='Would you like to send e-mail?')
         self.email_exist = 0
-        self.email_yes_radiobutton = Radiobutton(self, text='Yes', variable=boolvar, value=True, command=self.create_email_entry)
-        self.email_no_radiobutton = Radiobutton(self, text='No', variable=boolvar, value=False, command=self.delete_email_entry)
+        self.email_yes_radiobutton = Radiobutton(self, text='Yes', variable=self.boolvar, value=True, command=self.create_email_entry)
+        self.email_no_radiobutton = Radiobutton(self, text='No', variable=self.boolvar, value=False, command=self.delete_email_entry)
 
         self.mode_label = Label(self, text='Select a mode:')
-        self.mode_switcher = ttk.Combobox(self, values=['requirements', 'epoch'])
-        self.mode_switcher.set('requirements')
+        self.mode_strvar = StringVar()
+        self.mode_strvar.set('requirements')
+        self.mode_switcher = OptionMenu(self, self.mode_strvar, 'requirements', 'epoch')
 
         self.spec_label = Label(self, text='Select what we scan:')
-        self.check_spec_switcher = ttk.Combobox(self, values=['', 'control', 'specs'])
-        self.check_spec_switcher.set('')
+        self.strvar = StringVar()
+        self.strvar.set('')
+        self.check_spec_switcher = OptionMenu(self, self.strvar, '', 'control', 'spec')
 
         self.branch_label = Label(self, text='At the what branch we should check requirements?')
-        self.branch_switcher = ttk.Combobox(self, values=['master', '6.1', '6.0.1'])
-        self.branch_switcher.set('master')
+        self.branch_strvar = StringVar()
+        self.branch_strvar.set('master')
+        self.branch_switcher = OptionMenu(self, self.branch_strvar, 'master', '6.1', '6.0.1')
+
+        self.global_branch_label = Label(self, text='At the what branch we should find global requirements?')
+        self.global_branch_strvar = StringVar()
+        self.global_branch_strvar.set('master')
+        self.global_branch_switcher = OptionMenu(self, self.global_branch_strvar, 'master', 'stable/juno', 'stable/icehouse')
+
+        self.browse_file = Button(text='Browse', command=self.callback)
+        self.browse_file
 
         self.mode_label.pack()
         self.mode_switcher.pack()
@@ -128,21 +160,19 @@ class App(Tk):
         self.check_spec_switcher.pack()
         self.branch_label.pack()
         self.branch_switcher.pack()
+        self.global_branch_label.pack()
+        self.global_branch_switcher.pack()
         self.select_format_label.pack()
         self.pdf_format_radiobutton.pack()
         self.html_format_radiobutton.pack()
         self.email_quiestion.pack()
+        self.browse_file.pack()
         self.email_yes_radiobutton.pack()
         self.email_no_radiobutton.pack()
         self.generate_button.pack()
-        # After click to generate report button
-        # self.branch_name = self.branch_switcher.get()
-        # self.mode = self.mode_switcher.get()
-        # self.spec = self.check_spec_switcher.get()
-
 
 app = App()
 app.title('Requirements parser')
-app.geometry('640x480')
+app.geometry('350x480')
 App.center(app)
 app.mainloop()
