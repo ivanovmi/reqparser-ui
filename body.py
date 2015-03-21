@@ -82,11 +82,6 @@ def main(gerritAccount, mode_on, type_req_on, branch_name_on, global_branch, sen
 
         generate_report.generate_output(mode)
 
-        '''if send.lower() in ['y', 'yes']:
-            text = str(pack_count[0]) + ' packages were changed in ' + str(pack_count[1]) + ' repos.'
-            sender.send_mail(email, 'Report from ' + sender.cur_time, text, 'report.' + file_extension.lower())
-        elif send.lower() in ['n', 'no']:
-            raise SystemExit'''
         if send_on:
             text = str(pack_count[0]) + ' packages were changed in ' + str(pack_count[1]) + ' repos.'
             sender.send_mail(e_mail, 'Report from ' + sender.cur_time, text, 'report.' + file_extension.lower())

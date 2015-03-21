@@ -19,6 +19,7 @@ class App(Tk):
         self.button = Button(self, text='Login', command=self.new_layout)
         self.label_err = Label(self)
         self.grid()
+        self.geometry('200x260')
         self.create_widgets()
 
     def create_email_entry(self):
@@ -27,16 +28,16 @@ class App(Tk):
         else:
             self.email_label = Label(self, text='Input email address:')
             self.email_entry = Entry(self)
-            self.email_label.pack()
-            self.email_entry.pack()
+            self.email_label.grid(row=6, column=0)
+            self.email_entry.grid(row=6, column=1, columnspan=2)
             self.email_exist = 1
 
     def delete_email_entry(self):
         if self.email_exist == 0:
             pass
         else:
-            self.email_label.pack_forget()
-            self.email_entry.pack_forget()
+            self.email_label.grid_forget()
+            self.email_entry.grid_forget()
             self.email_exist = 0
 
     def generate_report(self):
@@ -63,7 +64,7 @@ class App(Tk):
     def processing_please_wait(self):
         self.window = Toplevel()
         self.window.overrideredirect(1)
-        self.window.geometry('100x30+500+300')
+        self.window.geometry('100x30')
         self.center(self.window)
         # code before computation starts
         self.label = Label(self.window, text='Wait for login')
@@ -90,10 +91,9 @@ class App(Tk):
     def new_layout(self):
         self.label_err.destroy()
         self.button.destroy()
-        self.button = Button(self, text='Wait for login')
         self.processing_please_wait()
         try:
-            pass#self.gerrit = lan.login_to_launchpad(self.entry_usr.get(), self.entry_pswd.get())
+            self.gerrit = lan.login_to_launchpad(self.entry_usr.get(), self.entry_pswd.get())
         except KeyError:
             self.button = Button(self, text='Login', command=self.new_layout)
             self.label_err = Label(self, text='Not autenticate')
@@ -109,27 +109,16 @@ class App(Tk):
 
     def callback(self):
         self.name = askopenfilename()
-        print self.name
-        self.file_label = Entry(self, text=self.name)
-        self.file_label.pack()
+        self.file_entry.insert(0, self.name)
+        self.file_entry.grid(row=7, column=0)
 
     def main_window(self):
-        # In this function will create_email_entry main window with all settings for parser
+        # Clear window to new use
         for widget in app.winfo_children():
             widget.destroy()
 
-        self.generate_button = Button(self, text='Generate report', command=self.generate_report)
-
-        self.var = IntVar()
-        self.select_format_label = Label(self, text='Please, select format of output:')
-        self.pdf_format_radiobutton = Radiobutton(self, text='pdf', variable=self.var, value=1)
-        self.html_format_radiobutton = Radiobutton(self, text='html', variable=self.var, value=2)
-
-        self.boolvar = BooleanVar()
-        self.email_quiestion = Label(self, text='Would you like to send e-mail?')
-        self.email_exist = 0
-        self.email_yes_radiobutton = Radiobutton(self, text='Yes', variable=self.boolvar, value=True, command=self.create_email_entry)
-        self.email_no_radiobutton = Radiobutton(self, text='No', variable=self.boolvar, value=False, command=self.delete_email_entry)
+        self.geometry('520x260')
+        self.center(self)
 
         self.mode_label = Label(self, text='Select a mode:')
         self.mode_strvar = StringVar()
@@ -150,29 +139,44 @@ class App(Tk):
         self.global_branch_strvar = StringVar()
         self.global_branch_strvar.set('master')
         self.global_branch_switcher = OptionMenu(self, self.global_branch_strvar, 'master', 'stable/juno', 'stable/icehouse')
+        self.global_branch_switcher.configure(width=15)
 
+        self.var = IntVar()
+        self.var.set(1)
+        self.select_format_label = Label(self, text='Please, select format of output:')
+        self.pdf_format_radiobutton = Radiobutton(self, text='pdf', variable=self.var, value=1)
+        self.html_format_radiobutton = Radiobutton(self, text='html', variable=self.var, value=2)
+
+        self.boolvar = BooleanVar()
+        self.email_exist = 0
+        self.email_quiestion = Label(self, text='Would you like to send e-mail?')
+        self.email_yes_radiobutton = Radiobutton(self, text='Yes', variable=self.boolvar, value=True, command=self.create_email_entry)
+        self.email_no_radiobutton = Radiobutton(self, text='No', variable=self.boolvar, value=False, command=self.delete_email_entry)
+
+        self.file_entry = Entry(self)
         self.browse_file = Button(text='Browse', command=self.callback)
-        self.browse_file
 
-        self.mode_label.pack()
-        self.mode_switcher.pack()
-        self.spec_label.pack()
-        self.check_spec_switcher.pack()
-        self.branch_label.pack()
-        self.branch_switcher.pack()
-        self.global_branch_label.pack()
-        self.global_branch_switcher.pack()
-        self.select_format_label.pack()
-        self.pdf_format_radiobutton.pack()
-        self.html_format_radiobutton.pack()
-        self.email_quiestion.pack()
-        self.browse_file.pack()
-        self.email_yes_radiobutton.pack()
-        self.email_no_radiobutton.pack()
-        self.generate_button.pack()
+        self.generate_button = Button(self, text='Generate report', command=self.generate_report)
+
+        self.mode_label.grid(row=0)
+        self.mode_switcher.grid(row=0, column=1, columnspan=2, sticky=EW)
+        self.spec_label.grid(row=1)
+        self.check_spec_switcher.grid(row=1, column=1, columnspan=2, sticky=EW)
+        self.branch_label.grid(row=2)
+        self.branch_switcher.grid(row=2, column=1, columnspan=2, sticky=EW)
+        self.global_branch_label.grid(row=3)
+        self.global_branch_switcher.grid(row=3, column=1, columnspan=2)#, sticky=EW)
+        self.select_format_label.grid(row=4)
+        self.pdf_format_radiobutton.grid(row=4, column=1)
+        self.html_format_radiobutton.grid(row=4, column=2)
+        self.email_quiestion.grid(row=5)
+        self.email_yes_radiobutton.grid(row=5, column=1)
+        self.email_no_radiobutton.grid(row=5, column=2)
+        self.file_entry.grid(row=7, column=0, sticky=W+E)
+        self.browse_file.grid(row=7, column=1, columnspan=2, sticky=EW)
+        self.generate_button.grid(columnspan=3, sticky=W+E)
 
 app = App()
 app.title('Requirements parser')
-app.geometry('350x480')
 App.center(app)
 app.mainloop()
